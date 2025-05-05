@@ -48,7 +48,27 @@ function draw() {
           noStroke();
           circle(keypoint.x, keypoint.y, 16);
         }
+
+        // Draw lines connecting specific keypoints
+        stroke(0, 255, 0); // Set line color to green
+        strokeWeight(2); // Set line thickness
+
+        // Connect keypoints in the specified ranges
+        connectKeypoints(hand.keypoints, 0, 4);  // Thumb
+        connectKeypoints(hand.keypoints, 5, 8);  // Index finger
+        connectKeypoints(hand.keypoints, 9, 12); // Middle finger
+        connectKeypoints(hand.keypoints, 13, 16); // Ring finger
+        connectKeypoints(hand.keypoints, 17, 20); // Pinky
       }
     }
+  }
+}
+
+// Helper function to connect keypoints in a range
+function connectKeypoints(keypoints, start, end) {
+  for (let i = start; i < end; i++) {
+    let kp1 = keypoints[i];
+    let kp2 = keypoints[i + 1];
+    line(kp1.x, kp1.y, kp2.x, kp2.y);
   }
 }
