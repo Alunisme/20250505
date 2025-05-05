@@ -10,6 +10,10 @@ let circleX = 320; // 畫布中間
 let circleY = 240; // 畫布中間
 let circleSize = 100;
 
+// 儲存手指軌跡的陣列
+let fingerTrail = [];
+let isTracking = false;
+
 function preload() {
   // Initialize HandPose model with flipped video input
   handPose = ml5.handPose({ flipped: true });
@@ -40,6 +44,16 @@ function draw() {
   noStroke();
   circle(circleX, circleY, circleSize);
 
+  // 繪製手指軌跡
+  stroke(255, 0, 0); // 紅色
+  strokeWeight(2);
+  noFill();
+  beginShape();
+  for (let point of fingerTrail) {
+    vertex(point.x, point.y);
+  }
+  endShape();
+
   // 確保至少有一隻手被偵測到
   if (hands.length > 0) {
     for (let hand of hands) {
@@ -68,6 +82,13 @@ function draw() {
           // 如果接觸，讓圓跟隨食指移動
           circleX = indexFinger.x;
           circleY = indexFinger.y;
+
+          // 開始追蹤手指軌跡
+          isTracking = true;
+          fingerTrail.push({ x: indexFinger.x, y: indexFinger.y });
+        } else {
+          // 停止追蹤手指軌跡
+          isTracking = false;
         }
 
         // 繪製手指連線
