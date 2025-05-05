@@ -11,8 +11,10 @@ let circleY = 240; // 畫布中間
 let circleSize = 100;
 
 // 儲存手指軌跡的陣列
-let fingerTrail = [];
-let isTracking = false;
+let fingerTrail = []; // 食指軌跡
+let middleFingerTrail = []; // 中指軌跡
+let isTrackingIndex = false;
+let isTrackingMiddle = false;
 
 function preload() {
   // Initialize HandPose model with flipped video input
@@ -44,12 +46,22 @@ function draw() {
   noStroke();
   circle(circleX, circleY, circleSize);
 
-  // 繪製手指軌跡
+  // 繪製食指的手指軌跡
   stroke(255, 0, 0); // 紅色
   strokeWeight(2);
   noFill();
   beginShape();
   for (let point of fingerTrail) {
+    vertex(point.x, point.y);
+  }
+  endShape();
+
+  // 繪製中指的手指軌跡
+  stroke(0, 255, 0); // 綠色
+  strokeWeight(2);
+  noFill();
+  beginShape();
+  for (let point of middleFingerTrail) {
     vertex(point.x, point.y);
   }
   endShape();
@@ -75,20 +87,37 @@ function draw() {
 
         // 獲取食指的關鍵點 (keypoint[8])
         let indexFinger = hand.keypoints[8];
+        // 獲取中指的關鍵點 (keypoint[12])
+        let middleFinger = hand.keypoints[12];
 
         // 檢查食指是否接觸圓
-        let d = dist(indexFinger.x, indexFinger.y, circleX, circleY);
-        if (d < circleSize / 2) {
+        let dIndex = dist(indexFinger.x, indexFinger.y, circleX, circleY);
+        if (dIndex < circleSize / 2) {
           // 如果接觸，讓圓跟隨食指移動
           circleX = indexFinger.x;
           circleY = indexFinger.y;
 
-          // 開始追蹤手指軌跡
-          isTracking = true;
+          // 開始追蹤食指軌跡
+          isTrackingIndex = true;
           fingerTrail.push({ x: indexFinger.x, y: indexFinger.y });
         } else {
-          // 停止追蹤手指軌跡
-          isTracking = false;
+          // 停止追蹤食指軌跡
+          isTrackingIndex = false;
+        }
+
+        // 檢查中指是否接觸圓
+        let dMiddle = dist(middleFinger.x, middleFinger.y, circleX, circleY);
+        if (dMiddle < circleSize / 2) {
+          // 如果接觸，讓圓跟隨中指移動
+          circleX = middleFinger.x;
+          circleY = middleFinger.y;
+
+          // 開始追蹤中指軌跡
+          isTrackingMiddle = true;
+          middleFingerTrail.push({ x: middleFinger.x, y: middleFinger.y });
+        } else {
+          // 停止追蹤中指軌跡
+          isTrackingMiddle = false;
         }
 
         // 繪製手指連線
