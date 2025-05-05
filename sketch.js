@@ -6,8 +6,11 @@ let handPose;
 let hands = [];
 
 function preload() {
-  // Initialize HandPose model with flipped video input
-  handPose = ml5.handPose({ flipped: true });
+  handPose = ml5.handPose(modelReady);
+}
+
+function modelReady() {
+  console.log("HandPose model loaded!");
 }
 
 function mousePressed() {
@@ -20,11 +23,11 @@ function gotHands(results) {
 
 function setup() {
   createCanvas(640, 480);
-  video = createCapture(VIDEO, { flipped: true });
+  video = createCapture(VIDEO);
+  video.size(640, 480);
   video.hide();
 
-  // Start detecting hands
-  handPose.detectStart(video, gotHands);
+  handPose.on("predict", gotHands);
 }
 
 function draw() {
